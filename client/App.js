@@ -9,6 +9,7 @@ import frontPage from './src/screens/frontPage';
 import camera from './src/screens/camera';
 import userHome from './src/screens/userHome';
 import search from './src/screens/search';
+import picture from './src/screens/picture';
 import resolveAuth from './src/screens/resolveAuth';
 import { StoreProvider, createStore } from 'easy-peasy';
 import model from './src/model';
@@ -24,7 +25,10 @@ const switchNavigator = createSwitchNavigator({
 
   mainFlow: createBottomTabNavigator({
     frontPage,
-    camera,
+    postFlow: createStackNavigator({
+      camera,
+      picture
+    }),
     userHome,
     search
   })

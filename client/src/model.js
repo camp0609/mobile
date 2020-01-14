@@ -7,6 +7,12 @@ export default {
 
 	authErrMsg: '',
 
+	userId: {},
+
+	picture: {},
+
+	location: {},
+
 	//thunks
 	register: thunk(async (actions, payload) => {
 		console.log(payload);
@@ -25,9 +31,9 @@ export default {
 	login: thunk(async (actions, payload) => {
 		try {
 			const res = await api().post('login', payload);
-			console.log(res.data.user);
+			console.log(res.data);
 			await AsyncStorage.setItem('token', res.data.token);
-			actions.signIn(res.data.token);
+			actions.signIn(res.data);
 		}catch(err) {
 			const errType = 0;
 			actions.authError(errType);
@@ -45,11 +51,23 @@ export default {
 
 	deleteToken: thunk(async actions => {
 		await AsyncStorage.removeItem('token');
+		actions.signOut();
+	}),
+
+	savePost: thunk(async (actions, payload) => {
+		try {
+			console.log(payload);
+			const res = await api().post('savePost', payload);
+			actions.picTaken();
+		}catch(err) {
+			console.log(err);
+		}
 	}),
 
 	//Actions
-	signIn: action((state, token) => {
-		state.userToken = token;
+	signIn: action((state, payload) => {
+		state.userToken = payload.token;
+		state.userId = payload.userId;
 		navigate('frontPage');
 	}),
 
@@ -65,5 +83,18 @@ export default {
 		} else {
 			state.authErrMsg = "invalid password/email";
 		}
+	}),
+
+	picTaken: action((state, payload) => {
+		state.location = payload.location;
+		state.picture = payload.picture;
+		navigate('picture'); //need to figure out where to navigate after pic taken
 	})
 }
+
+// <Image
+// 	          style={{width: 50, height: 50}}
+// 	          source={{uri: picture.uri}}
+// 	        />
+// 	         <Text>{location}</Text>
+// 	         <Input placeholder = "Save message with image" onChangeText = {setMessage}/>
